@@ -9,6 +9,8 @@ using Companies.API.Data;
 using Companies.API.Entities;
 using Companies.Shared.DTOs;
 using AutoMapper;
+using Azure;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace Companies.API.Controllers
 {
@@ -117,6 +119,32 @@ namespace Companies.API.Controllers
             }
 
             _context.Employees.Remove(employee);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> PatchEmployee(int companyId, int id, JsonPatchDocument<EmployeeUpdateDto> patchDocument)
+        {
+            if (patchDocument is null) return BadRequest("No patchdocument");
+
+            var companyExist = await _context.Companies.AnyAsync(c => c.Id.Equals(companyId));
+            if (!companyExist) return NotFound("Company does not exist");
+
+            var employeeToPatch = await _context.Employees.FirstOrDefaultAsync(e => e.Id.Equals(id) && e.CompanyId.Equals(companyId));
+            if (employeeToPatch == null) return NotFound("Employee does not exist");
+
+            var dto = _mapper.Map<EmployeeUpdateDto>(employeeToPatch);
+            patchDocument.ApplyTo(dto, ModelState);                                 // Här patchas dto:n ihop med patchdokumentet.
+            TryValidateModel(dto);
+
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
+            _mapper.Map(dto, employeeToPatch);
             await _context.SaveChangesAsync();
 
             return NoContent();
