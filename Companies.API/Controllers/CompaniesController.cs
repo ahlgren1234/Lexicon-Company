@@ -89,6 +89,8 @@ namespace Companies.API.Controllers
         //    return await _context.Companies.FindAsync(id);
         //}
 
+
+
         // PUT: api/Companies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -99,7 +101,7 @@ namespace Companies.API.Controllers
                 return BadRequest();
             }
 
-            var existingCompany = await _uow.CompanyRepository.GetCompanyAsync(id);
+            var existingCompany = await _uow.CompanyRepository.GetCompanyAsync(id, trackChanges: true);
             if (existingCompany == null)
             {
                 return NotFound("Company does not exist");
@@ -117,7 +119,7 @@ namespace Companies.API.Controllers
         public async Task<ActionResult<CompanyDto>> PostCompany(CompanyCreateDto dto)
         {
             var company = _mapper.Map<Company>(dto);
-            _uow.CompanyRepository.Add(company);
+            _uow.CompanyRepository.Create(company);
             await _uow.CompleteAsync();
 
             var createdCompany = _mapper.Map<CompanyDto>(company);
