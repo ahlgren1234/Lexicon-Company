@@ -2,8 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Companies.Infrastructure.Data;
 using System.Threading.Tasks;
-using Companies.API.Services;
 using Companies.API.Extensions;
+using Companies.Infrastructure.Repositories;
+using Domain.Contracts;
 
 namespace Companies.API
 {
