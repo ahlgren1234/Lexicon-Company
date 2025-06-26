@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Companies.API.Data;
+using Companies.Infrastructure.Data;
 using Companies.Shared.DTOs;
 using AutoMapper;
 using Azure;
