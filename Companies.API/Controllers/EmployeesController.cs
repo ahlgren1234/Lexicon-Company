@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Companies.API.Data;
-using Companies.API.Entities;
 using Companies.Shared.DTOs;
 using AutoMapper;
 using Azure;
 using Microsoft.AspNetCore.JsonPatch;
+using Domain.Models.Entities;
 
 namespace Companies.API.Controllers
 {
