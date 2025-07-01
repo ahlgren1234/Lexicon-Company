@@ -1,41 +1,48 @@
 ﻿using Companies.Infrastructure.Data;
 using Domain.Contracts;
 
-namespace Companies.Infrastructure.Repositories
+namespace Companies.Infrastructure.Repositories;
+
+public class UnitOfWork : IUnitOfWork
 {
-    public class UnitOfWork : IUnitOfWork
+    private readonly CompaniesContext _context;
+
+    private readonly Lazy<ICompanyRepository> companyRepository;
+    private readonly Lazy<IEmployeeRepository> employeeRepository;
+
+
+
+
+
+    public ICompanyRepository CompanyRepository => companyRepository.Value;
+    public IEmployeeRepository EmployeeRepository => employeeRepository.Value;
+
+
+
+    // Fler repos
+
+    //public UnitOfWork(CompaniesContext context)
+    //{
+    //    _context = context;
+    //    //CompanyRepository = new CompanyRepository(context);
+    //    //EmployeeRepository = new EmployeeRepository(context);
+
+    //    companyRepository = new Lazy<ICompanyRepository>(() => new CompanyRepository(context));
+    //    employeeRepository = new Lazy<IEmployeeRepository>(() => new EmployeeRepository(context));
+    //}
+
+
+    public UnitOfWork(CompaniesContext context, Lazy<ICompanyRepository> companyrepository, Lazy<IEmployeeRepository> employeerepository)
     {
-        private readonly CompaniesContext _context;
-
-        private readonly Lazy<ICompanyRepository> companyRepository;
-        private readonly Lazy<IEmployeeRepository> employeeRepository;
-
-
+        _context = context;
+        companyRepository = companyrepository;
+        employeeRepository = employeerepository;
+    }
 
 
 
-        public ICompanyRepository CompanyRepository => companyRepository.Value;
-        public IEmployeeRepository EmployeeRepository => employeeRepository.Value;
-
-
-
-        // Fler repos
-
-        public UnitOfWork(CompaniesContext context)
-        {
-            _context = context;
-            //CompanyRepository = new CompanyRepository(context);
-            //EmployeeRepository = new EmployeeRepository(context);
-
-            companyRepository = new Lazy<ICompanyRepository>(() => new CompanyRepository(context));
-            employeeRepository = new Lazy<IEmployeeRepository>(() => new EmployeeRepository(context));
-        }
-
-
-
-        public async Task CompleteAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
+    public async Task CompleteAsync()
+    {
+        await _context.SaveChangesAsync();
     }
 }

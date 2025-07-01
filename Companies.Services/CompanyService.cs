@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Companies.Services
 {
-    internal class CompanyService : ICompanyService
+    public class CompanyService : ICompanyService
     {
         private IUnitOfWork _uow;
         private readonly IMapper _mapper;
