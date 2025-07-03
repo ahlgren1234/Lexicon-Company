@@ -28,6 +28,8 @@ public static class ServiceExtensions
 
         services.AddLazy<ICompanyService>();
         services.AddLazy<IEmployeeService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddLazy<IAuthService>();
     }
 
     public static void ConfigureRepositories(this IServiceCollection services)

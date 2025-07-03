@@ -11,6 +11,9 @@ using System.Reflection.Metadata;
 using Microsoft.Build.Execution;
 using Domain.Models.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Companies.API;
 
@@ -43,7 +46,30 @@ public class Program
         builder.Services.ConfigureServiceLayerServices();
         builder.Services.ConfigureRepositories();
 
-        builder.Services.AddAuthentication();
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+            ArgumentNullException.ThrowIfNull(nameof(jwtSettings));
+
+            var secretKey = builder.Configuration["secretkey"];
+            ArgumentNullException.ThrowIfNull(secretKey, nameof(secretKey));
+
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = jwtSettings["Issuer"],
+                ValidateAudience = true,
+                ValidAudience = jwtSettings["Audience"],
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+                ValidateLifetime = true,
+            };
+        });
+
         builder.Services.AddIdentityCore<ApplicationUser>(opt =>
         {
             opt.Password.RequireLowercase = false;
@@ -51,6 +77,7 @@ public class Program
             opt.Password.RequireUppercase = false;
             opt.Password.RequireNonAlphanumeric = false;
             opt.Password.RequiredLength = 3;
+            opt.User.RequireUniqueEmail = true;
         }
         )
             .AddRoles<IdentityRole>()
